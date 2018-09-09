@@ -7,3 +7,6 @@ To execute solver:
     
 The latter will execute a randomized heuristic based solver that may perform
 better than the default (dfs-based) solver for larger values of N.
+
+NOTE: the solver restricts solutions to a specialized class that includes
+no three colinear queen placements. 
