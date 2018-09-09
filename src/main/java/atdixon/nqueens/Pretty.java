@@ -1,44 +1,33 @@
 package atdixon.nqueens;
 
-import com.google.common.base.Strings;
+import atdixon.nqueens.solver.Board;
+import io.vavr.collection.Set;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.IntStream.range;
 
-final class Pretty {
+public final class Pretty {
 
     private Pretty() {}
 
-    static String fromBoard(Iterable<Integer> solution) {
-        final Map<Integer, Integer> transpose = transpose(solution);
-        final int N = transpose.size();
-        return range(0, N)
-            .map(i -> N - i - 1) // ...to row index
-            .mapToObj(row -> fromRow(N, row, transpose.get(row)))
+    public static String of(Board board) {
+        return range(0, board.width())
+            .map(i -> board.width() - i - 1) // ...to row index
+            .mapToObj(row -> ofRow(board, row))
             .collect(joining("\n"))
-            + "\n" + range(0, N)
+            + "\n" + range(0, board.width())
                 .mapToObj(i -> String.valueOf((char) ('a' + i)))
                 .collect(joining(" "));
     }
 
-    private static String fromRow(int N, int row, int column) {
-        return new StringBuilder()
-            .append(Strings.repeat("* ", column))
-            .append("Q ")
-            .append(Strings.repeat("* ", N - column - 1))
-            .append(row + 1) // chessboard numerals are 1-based
-            .toString();
-    }
-
-    private static Map<Integer, Integer> transpose(Iterable<Integer> coll) {
-        final Map<Integer, Integer> transpose = new HashMap<>();
-        int col = 0;
-        for (Integer val : coll)
-            transpose.put(val, col++);
-        return transpose;
+    private static String ofRow(Board board, int row) {
+        final Set<Integer> cols = board.queenColumnsForRow(row);
+        return IntStream.rangeClosed(0, board.width())
+            .mapToObj(i -> i == board.width() ? String.valueOf(row + 1)
+                : cols.contains(i) ? "Q" : "*")
+            .collect(joining(" "));
     }
 
 }
