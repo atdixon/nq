@@ -1,4 +1,4 @@
-package atdixon.nqueens.support;
+package atdixon.nqueens.solver;
 
 import org.paukov.combinatorics3.Generator;
 

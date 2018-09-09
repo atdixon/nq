@@ -7,12 +7,15 @@ import io.vavr.collection.Set;
 
 import java.util.Random;
 
-import static atdixon.nqueens.support.Math.combinations;
-import static atdixon.nqueens.support.Math.isColinear;
+import static atdixon.nqueens.solver.Math.combinations;
+import static atdixon.nqueens.solver.Math.isColinear;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.abs;
 
+/**
+ * Randomized, heuristic-based solver.
+ */
 public final class HeuristicSolver {
 
     private static final Random RANDOM = new Random();
@@ -34,7 +37,7 @@ public final class HeuristicSolver {
             final int rand = RANDOM.nextInt(N);
             for (int i = 0; i < N && next == null; ++i) {
                 final int col = (i + rand) % N;
-                if (distance_(curr, col) > 0) {
+                if (distance(curr, col) > 0) {
                     hasThreats = true;
                     final Board curr_ = curr;
                     final Set<List<Integer>> seen_ = seen;
@@ -46,7 +49,7 @@ public final class HeuristicSolver {
                         // determine next candidate and weight (ie, num threats)
                         .map(row -> {
                             final Board candidate = curr_.moveQueen(col, row);
-                            return new Tuple2<>(candidate, distance_(candidate, col)); })
+                            return new Tuple2<>(candidate, distance(candidate, col)); })
                         // do not consider already-seen
                         .filter(tpl -> !seen_.contains(tpl._1.queenRows()))
                         // choose minimum weight
@@ -66,12 +69,12 @@ public final class HeuristicSolver {
 
     /** "Distance function"; heuristic "cost" of queen in given column.
      * Non-zero iff lone queen is safe wrt board rules. */
-    private static int distance(Board board, int col) {
+    private static int distanceStandard(Board board, int col) {
         return countThreats(board, col);
     }
 
     /** "Distance function"; heuristic "cost" of queen in given column. */
-    private static int distance_(Board board, int col) {
+    private static int distance(Board board, int col) {
         return countThreats(board, col) + countColinearPairs(board, col);
     }
 

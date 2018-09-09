@@ -12,9 +12,16 @@ import java.util.stream.IntStream;
 
 import static com.google.common.base.Preconditions.checkState;
 
-/** Immutable set with these properties: ...with all operations constant-time. */
+/**
+ * This chessboard representation is essentially a linked, <em>immutable</em>,
+ * <em>persistent</em> set with constant-time operations including constant-time
+ * index lookup.
+ *
+ * An important restriction is that while some columns may have no placed queens,
+ * no column contains more than one placed queen. */
 public final class Board {
 
+    /** Create an empty (no placed queens) board with the given <code>width</code> dimension. */
     public static Board empty(int width) {
         return new Board(width,
             LinkedHashMultimap.withSet().empty(),
@@ -33,21 +40,32 @@ public final class Board {
         this.colToRow = colToRow;
     }
 
+    /** Dimensional size of board. */
     public int width() {
         return width;
     }
 
+    /** All columns have a placed queen. */
     public boolean isFull() {
         return width() == numQueens();
     }
 
+    /**
+     * Add queens to board at the specified rows.
+     *
+     * Precondition: no queens yet exist in the columns specified by
+     * the indices of the provided list.
+     */
     public Board addQueens(List<Integer> rows) {
         return rows.zipWithIndex()
             .foldLeft(this,
                 (acc, tpl) -> acc.addQueen(tpl._2, tpl._1));
     }
 
-    /** Precondition: queen does not yet exist in <code>col</code>. */
+    /**
+     * Precondition: no queen is yet placed at the provided column
+     * <code>col</code>.
+     */
     public Board addQueen(int col, int row) {
         checkState(col < width && row < width);
         checkState(!colToRow.containsKey(col));
@@ -55,6 +73,7 @@ public final class Board {
             rowToCol.put(row, col), colToRow.put(col, row));
     }
 
+    /** Move queen at column <code>code</code> to row <code>row</code>. */
     public Board moveQueen(int col, int row) {
         checkState(col < width && row < width);
         return new Board(width,
@@ -64,10 +83,12 @@ public final class Board {
             colToRow.put(col, row));
     }
 
+    /** Number of queens placed on the board. */
     public int numQueens() {
         return colToRow.size();
     }
 
+    /** Number of queens placed on the given row. */
     public int numQueensInRow(int row) {
         return rowToCol.get(row)
             .map(Traversable::size)
@@ -93,6 +114,7 @@ public final class Board {
             .collect(List.collector());
     }
 
+    /** Columns of all queens placed on the given row. */
     public Set<Integer> queenColumnsForRow(int row) {
         return LinkedHashSet.ofAll(rowToCol.get(row).getOrElse(List.empty()));
     }

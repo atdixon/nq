@@ -14,23 +14,25 @@ public final class Cli {
         }
         // -- parse args --
         final int N = Integer.parseInt(args[0]);
-        final String type
-            = args.length < 2 ? "random" : args[1];
+        final boolean useHeuristicSolver = args.length > 1
+            && "heuristic".equals(args[1]);
         // -- solve --
         final Stopwatch clock = Stopwatch.createStarted();
         final Board soln =
-            type.equals("random")
+            useHeuristicSolver
                 ? HeuristicSolver.solve(N)
                 : RecursiveSolver.solve(N);
         clock.stop();
         // -- output --
+        System.out.println("solver: " +
+            (useHeuristicSolver ? "heuristic" : "default"));
         System.out.println(soln == null
             ? "no solution found" : Pretty.of(soln));
         System.out.println(clock);
     }
 
     private static String usage() {
-        return "Usage: command <N> [random|dfs]";
+        return "Usage: nq <N> [default|heuristic]";
     }
 
 }

@@ -1,13 +1,14 @@
 package atdixon.nqueens.solver;
 
-import atdixon.nqueens.support.Util;
-
 import javax.annotation.Nullable;
 
-import static atdixon.nqueens.support.Math.combinations;
-import static atdixon.nqueens.support.Math.isColinear;
+import static atdixon.nqueens.solver.Math.combinations;
+import static atdixon.nqueens.solver.Math.isColinear;
 import static java.lang.Math.abs;
 
+/**
+ * Recursive DFS solver.
+ */
 public final class RecursiveSolver {
 
     private RecursiveSolver() {}
@@ -20,7 +21,7 @@ public final class RecursiveSolver {
         if (acc.numQueens() == acc.width())
             return acc;
         for (int row = 0; row < acc.width(); ++row) {
-            if (isSafeAddition_(acc, acc.numQueens(), row)) {
+            if (isSafeAddition(acc, acc.numQueens(), row)) {
                 final Board soln = solve(acc.addQueen(acc.numQueens(), row)/*O(1)*/);
                 if (soln != null)
                     return soln;
@@ -29,14 +30,15 @@ public final class RecursiveSolver {
         return null;
     }
 
-    private static boolean isSafeAddition(Board acc, int col, int row) {
+    private static boolean isSafeAdditionStandard(Board acc, int col, int row) {
         return acc.numQueensInRow(row) == 0 // O(1)
-            && Util.forAllWithIndex(acc.queenRowsForColumnRange(0, col),
-                idx -> val -> abs(col - idx) != abs(row - val)); // O(|acc|)
+            && acc.queenRowsForColumnRange(0, col)
+                .zipWithIndex()
+                .forAll(tpl -> abs(col - tpl._2) != abs(row - tpl._1)); // O(|acc|)
     }
 
-    private static boolean isSafeAddition_(Board acc, int col, int row) {
-        return isSafeAddition(acc, col, row)
+    private static boolean isSafeAddition(Board acc, int col, int row) {
+        return isSafeAdditionStandard(acc, col, row)
             && (col < 2 ||
                 combinations(col, 2)
                     /*O(|acc|^2)*/.noneMatch(comb ->

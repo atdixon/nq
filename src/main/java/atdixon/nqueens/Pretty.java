@@ -8,17 +8,17 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.IntStream.range;
 
-public final class Pretty {
+final class Pretty {
 
     private Pretty() {}
 
-    public static String of(Board board) {
+    static String of(Board board) {
         return range(0, board.width())
             .map(i -> board.width() - i - 1) // ...to row index
             .mapToObj(row -> ofRow(board, row))
             .collect(joining("\n"))
             + "\n" + range(0, board.width())
-                .mapToObj(i -> String.valueOf((char) ('a' + i)))
+                .mapToObj(i -> i < 26 ? String.valueOf((char) ('a' + i)) : ".")
                 .collect(joining(" "));
     }
 
