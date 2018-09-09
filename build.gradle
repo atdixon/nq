@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+group 'com.github.atdixon'
+version '0.1-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    compile 'io.vavr:vavr:0.9.0'
+    compile 'com.google.guava:guava:26.0-jre'
+    testCompile 'junit:unit:4.12'
+}
