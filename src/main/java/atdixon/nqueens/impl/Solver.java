@@ -1,31 +1,15 @@
-package atdixon.nqueens;
-
-import com.google.common.base.Stopwatch;
+package atdixon.nqueens.impl;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
 import static java.lang.Math.abs;
 
-public class Solver {
+public final class Solver {
 
-    // discuss: why immutable/persistent! LinkedHashSet
-    // guava vs vavr
-    // recursion, mem concerns, integer overflow - non-issue b/c practical solvability degrades fast
+    private Solver() {}
 
-    public static void main(String[] args) {
-        final Stopwatch clock = Stopwatch.createStarted();
-        // -- solve --
-        final SpecializedSet<Integer> soln
-                = solve(20, SpecializedSet.empty());
-        clock.stop();
-        System.out.println(
-            soln == null ? "<no solution>"
-                : Pretty.fromBoard(soln.asSet()));
-        System.out.println(clock);
-    }
-
-    @Nullable static SpecializedSet<Integer> solve(int N, SpecializedSet<Integer> acc) {
+    @Nullable public static SpecializedSet<Integer> solve(int N, SpecializedSet<Integer> acc) {
         if (acc.size() == N)
             return acc;
         for (int row = 0; row < N; ++row) {
@@ -47,7 +31,7 @@ public class Solver {
         return isSafeAddition(acc, row)
             && (acc.size() < 2 ||
                 Math.combinations(acc.size(), 2)
-                    /*O(|acc|)*/.noneMatch(comb ->
+                    /*O(|acc|^2)*/.noneMatch(comb ->
                         Math.isColinear(comb[0], acc.get(comb[0]), comb[1],
                             acc.get(comb[1]), acc.size(), row)));
     }

@@ -1,4 +1,4 @@
-package atdixon.nqueens;
+package atdixon.nqueens.impl;
 
 import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.LinkedHashSet;
@@ -7,9 +7,9 @@ import io.vavr.collection.Set;
 import javax.annotation.Nullable;
 
 /** Immutable set with these properties: ...with all operations constant-time. */
-final class SpecializedSet<T> {
+public final class SpecializedSet<T> {
 
-    static <T> SpecializedSet<T> empty() {
+    public static <T> SpecializedSet<T> empty() {
         return new SpecializedSet<>(LinkedHashSet.empty(), LinkedHashMap.empty());
     }
 

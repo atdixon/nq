@@ -1,4 +1,4 @@
-package atdixon.nqueens;
+package atdixon.nqueens.impl;
 
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.stream.IntStream.rangeClosed;
 
-public final class Math {
+final class Math {
 
     private Math() {}
 

@@ -11,9 +11,17 @@ repositories {
     mavenCentral()
 }
 
+compileJava {
+    options.compilerArgs << '-proc:none'
+}
+
 dependencies {
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'io.vavr:vavr:0.9.0'
     compile 'com.google.guava:guava:26.0-jre'
-    testCompile 'junit:unit:4.12'
+}
+
+task runApp(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'atdixon.nqueens.Cli'
 }
