@@ -1,9 +1,11 @@
 package atdixon.nqueens.solver;
 
+import io.vavr.Tuple2;
+import io.vavr.collection.HashSet;
+import org.apache.commons.math3.fraction.Fraction;
+
 import javax.annotation.Nullable;
 
-import static atdixon.nqueens.solver.Math.combinations;
-import static atdixon.nqueens.solver.Math.isColinear;
 import static java.lang.Math.abs;
 
 /**
@@ -39,11 +41,18 @@ public final class RecursiveSolver {
 
     private static boolean isSafeAddition(Board acc, int col, int row) {
         return isSafeAdditionStandard(acc, col, row)
-            && (col < 2 ||
-                combinations(col, 2)
-                    /*O(|acc|^2)*/.noneMatch(comb ->
-                        isColinear(comb.get(0), acc.queenRowForColumn(comb.get(0)), comb.get(1),
-                            acc.queenRowForColumn(comb.get(1)), col, row)));
+            && !isColinearAddition(acc, col, row);
+    }
+
+    private static boolean isColinearAddition(Board board, int col, int row) { // O(|board|)
+        return board.queenRowsForColumnRange(0, col)
+            .zipWithIndex()
+            .foldLeft(new Tuple2<>(HashSet.empty(), false),
+                (acc, qr) -> {
+                    final Fraction slope = new Fraction(col - qr._2, row - qr._1);
+                    return new Tuple2<>(
+                        acc._1.add(slope),
+                        acc._2 || acc._1.contains(slope)); })._2;
     }
 
 }
