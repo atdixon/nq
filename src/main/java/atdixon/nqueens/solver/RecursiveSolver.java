@@ -44,12 +44,14 @@ public final class RecursiveSolver {
             && !isColinearAddition(acc, col, row);
     }
 
+    /** Precondition: provided row is not currently used on the board. */
     private static boolean isColinearAddition(Board board, int col, int row) { // O(|board|)
         return board.queenRowsForColumnRange(0, col)
             .zipWithIndex()
             .foldLeft(new Tuple2<>(HashSet.empty(), false),
                 (acc, qr) -> {
-                    final Fraction slope = new Fraction(col - qr._2, row - qr._1);
+                    final Fraction slope = new Fraction(col - qr._2,
+                        /*non-zero due to precondition:*/row - qr._1);
                     return new Tuple2<>(
                         acc._1.add(slope),
                         acc._2 || acc._1.contains(slope)); })._2;

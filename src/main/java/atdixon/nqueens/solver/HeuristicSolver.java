@@ -4,11 +4,10 @@ import io.vavr.Tuple2;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import io.vavr.collection.Set;
+import org.apache.commons.math3.fraction.Fraction;
 
 import java.util.Random;
 
-import static atdixon.nqueens.solver.Math.combinations;
-import static atdixon.nqueens.solver.Math.isColinear;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.abs;
@@ -91,17 +90,18 @@ public final class HeuristicSolver {
     }
 
     /** Precondition: {@link Board#isFull()}. */
-    private static int countColinearPairs(Board board, int col) { // O(n^2)
+    private static int countColinearPairs(Board board, int col) { // O(n)
         final int row = checkNotNull(board.queenRowForColumn(col));
-        return (int) combinations(board.width() - 1, 2)
-            .map(comb -> List.of(
-                comb.get(0) >= col ? comb.get(0) + 1 : comb.get(0),
-                comb.get(1) >= col ? comb.get(1) + 1 : comb.get(1)))
-            .filter(comb -> {
-                final int x1 = comb.get(0), y1 = checkNotNull(board.queenRowForColumn(x1));
-                final int x2 = comb.get(1), y2 = checkNotNull(board.queenRowForColumn(x2));
-                return isColinear(x1, y1, x2, y2, col, row);
-            }).count();
+        return board.queenRowsForColumnRange(0, col)
+            .zipWithIndex()
+            .filter(tpl -> tpl._2 != col) // exclude provided col
+            .foldLeft(new Tuple2<>(HashSet.empty(), 0),
+                (acc, qr) -> {
+                    final Fraction slope = row - qr._1 == 0 ? /*NaN=*/null
+                        : new Fraction(col - qr._2, row - qr._1);
+                    return new Tuple2<>(
+                        acc._1.add(slope),
+                        acc._2 + (acc._1.contains(slope) ? 1 : 0)); })._2;
     }
 
 }
